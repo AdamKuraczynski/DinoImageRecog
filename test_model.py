@@ -4,7 +4,7 @@ from keras.utils import img_to_array, load_img
 import numpy as np
 import cv2
 
-model = tf.keras.models.load_model("trained_model/dino.h5")  
+model = tf.keras.models.load_model("trainedModel/dino.h5")  
 print(model.summary())
 
 batchSize = 32
@@ -25,7 +25,7 @@ def prepareImage(pathForImage):
     imgResult = imgResult /255.
     return imgResult
 
-testImagPath = "ptero_test.png" 
+testImagPath = "testingDataset/trice_test.png" 
 imageForModel = prepareImage(testImagPath)
 
 resultArray = model.predict(imageForModel, batch_size=batchSize, verbose=1)

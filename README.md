@@ -18,3 +18,4 @@ C:\Users\Adam\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2
 
 # add untracked files
 git add $(git ls-files -o --exclude-standard)  
+

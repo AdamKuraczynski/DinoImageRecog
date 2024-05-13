@@ -70,12 +70,12 @@ validationSteps = np.ceil(validation_dataset.samples / batchSize)
 
 from keras.callbacks import ModelCheckpoint
 
-best_model_file= "trained_model/dino.h5"
+best_model_file= "trainedModel/dino.h5"
 best_model = ModelCheckpoint(best_model_file, monitor='val_accuracy', verbose=1, save_best_only=True)
 
 history = model.fit(train_dataset,
                     steps_per_epoch=stepsPerEpochs,
-                    epochs=10,
+                    epochs=30,
                     validation_data=validation_dataset,
                     validation_steps=validationSteps,
                     callbacks=[best_model] )
