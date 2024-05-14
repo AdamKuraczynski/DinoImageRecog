@@ -5,7 +5,7 @@ from keras import layers, models
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 import matplotlib.pyplot as plt
 
 path = "dinosaursDataset"
@@ -36,24 +36,25 @@ validation_dataset = datagen.flow_from_directory(batch_size=32,
                                                  class_mode="categorical")
 
 # Build the model
-model = Sequential()
-model.add(Conv2D(filters=16, kernel_size=3, activation='relu', padding='same', input_shape=(224,224,3)))
-model.add(MaxPooling2D(pool_size=2))
-model.add(Dropout(0.5))
+model = models.Sequential([
+    layers.Conv2D(filters=16, kernel_size=3, activation='relu', padding='same', input_shape=(224,224,3)),
+    layers.MaxPooling2D(pool_size=2),
+    layers.Dropout(0.5),
 
-model.add(Conv2D(filters=32, kernel_size=3, activation='relu', padding='same'))
-model.add(MaxPooling2D(pool_size=2))
+    layers.Conv2D(filters=32, kernel_size=3, activation='relu', padding='same'),
+    layers.MaxPooling2D(pool_size=2),
 
-model.add(Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'))
-model.add(MaxPooling2D(pool_size=2))
-model.add(Dropout(0.5))
+    layers.Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'),
+    layers.MaxPooling2D(pool_size=2),
+    layers.Dropout(0.5),
 
-model.add(Flatten())
+    layers.Flatten(),
 
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.5),
 
-model.add(Dense(train_dataset.num_classes, activation='softmax'))
+    layers.Dense(train_dataset.num_classes, activation='softmax')
+])
 
 model.summary()
 
@@ -62,12 +63,15 @@ model.compile(loss="categorical_crossentropy", optimizer="Adam", metrics=["accur
 # Training
 start_time = time()
 
+#early stopping
+early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, restore_best_weights=True)
+
 history = model.fit(train_dataset,
                     steps_per_epoch=np.ceil(train_dataset.samples / 32),
-                    epochs=5,
+                    epochs=20,
                     validation_data=validation_dataset,
                     validation_steps=np.ceil(validation_dataset.samples / 32),
-                    callbacks=[ModelCheckpoint("trainedModel/dino.h5", monitor='val_accuracy', verbose=1, save_best_only=True)])
+                    callbacks=[ModelCheckpoint("trainedModel/dino.h5", monitor='val_accuracy', verbose=1, save_best_only=True), early_stopping ])
 
 end_time = time()
 train_time = end_time - start_time
