@@ -15,9 +15,26 @@ pip install joblib
 view advanced system settings -> environment variables -> click variable called path -> edit -> add new line ith below location  
 C:\Users\Adam\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts  
 
-### Add untracked files
+# Add untracked files
 git add $(git ls-files -o --exclude-standard)
 
+# Delete 1 previous commit without deleting local changes
+git reset HEAD^
+
+git push origin main  
+git pull origin main  
+git commit -m ""  
+git commit -a  
+git stash       
+git status  
+ 
+git remote add origin https://github.com/AdamKuraczynski/DinoImageRecog.git  
+git remote remove origin
+
+git init
+git add .
+git remote show origin  
+git remote add origin https://github.com/AdamKuraczynski/DinoImageRecog.git  
 
 ### Testing variables:
 - conv layers 1/2/3/5
