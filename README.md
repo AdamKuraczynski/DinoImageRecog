@@ -23,16 +23,14 @@ git reset HEAD^
 
 git push origin main  
 git pull origin main  
-git commit -m ""  
-git commit -a  
+git commit -a -m ""   
 git stash       
 git status  
- 
-git remote add origin https://github.com/AdamKuraczynski/DinoImageRecog.git  
-git remote remove origin
+   
+git remote remove origin  
 
-git init
-git add .
+git init  
+git add .  
 git remote show origin  
 git remote add origin https://github.com/AdamKuraczynski/DinoImageRecog.git  
 
