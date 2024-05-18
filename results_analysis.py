@@ -19,7 +19,7 @@ def plot_parameter(df, parameter, ax=None):
     ax.set_xlabel(parameter)
     ax.set_ylabel('Train Accuracy')
     ax.grid(True)
-    plt.savefig(f'results/train_accuracy_vs_{parameter}.png')
+    
 
 # Create subplots
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
