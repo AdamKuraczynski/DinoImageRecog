@@ -9,21 +9,17 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 from tabulate import tabulate
 import pandas as pd
 
-# Define the parameters to test
 conv_layers = [1,2,3,5]
 pool_layers = [1,2,3,5]
 epochs = [5, 10, 25, 50]
 optimizers = ['Adam', 'SGD', 'RMSprop', 'Adadelta']
 batch_sizes = [16, 32, 64, 128]
 
-# Initialize results list
 results = []
 
-# Set up data generators
 path = "dinosaursDataset"
 datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2, horizontal_flip=True)
 
-# Function to build and train the model
 def build_and_train_model(num_conv_layers, num_pool_layers, num_epochs, optimizer, batch_size):
     train_dataset = datagen.flow_from_directory(batch_size=batch_size,
                                                 directory=path,
@@ -56,7 +52,6 @@ def build_and_train_model(num_conv_layers, num_pool_layers, num_epochs, optimize
 
     model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
 
-    #early stopping
     early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, restore_best_weights=True)
     
     start_time = time()
@@ -75,7 +70,6 @@ def build_and_train_model(num_conv_layers, num_pool_layers, num_epochs, optimize
     results.append([num_conv_layers, num_pool_layers, num_epochs, optimizer, batch_size,
                     train_score[0], train_score[1], test_score[0], test_score[1], train_time])
 
-# Iterate over all parameter combinations
 for conv_layer in conv_layers:
     for pool_layer in pool_layers:
         for num_epochs in epochs:
@@ -84,11 +78,9 @@ for conv_layer in conv_layers:
                     print(f"Testing with conv_layers={conv_layer}, pool_layers={pool_layer}, epochs={num_epochs}, optimizer={optimizer}, batch_size={batch_size}")
                     build_and_train_model(conv_layer, pool_layer, num_epochs, optimizer, batch_size)
 
-# Print results in a table
 headers = ["Conv Layers", "Pool Layers", "Epochs", "Optimizer", "Batch Size", "Train Loss", "Train Accuracy", "Test Loss", "Test Accuracy", "Train Time (s)"]
 print(tabulate(results, headers=headers))
 
-# Save results to CSV
 results_df = pd.DataFrame(results, columns=headers)
 results_df.to_csv("results/results.csv", index=False)
 print("Results saved to results/results.csv")
