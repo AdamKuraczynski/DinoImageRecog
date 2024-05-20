@@ -9,11 +9,11 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 from tabulate import tabulate
 import pandas as pd
 
-conv_layers = [2]
-pool_layers = [3]
-epochs = [50]
-optimizers = ['Adam']
-batch_sizes = [16]
+conv_layers = [1]
+pool_layers = [5]
+epochs = [25]
+optimizers = ['RMSprop']
+batch_sizes = [64]
 
 results = []
 
