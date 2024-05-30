@@ -9,18 +9,28 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 from tabulate import tabulate
 import pandas as pd
 
-conv_layers = [1]
-pool_layers = [5]
-epochs = [25]
-optimizers = ['RMSprop']
-batch_sizes = [64]
+# Fixed parameters
+num_conv_layers = 1
+num_pool_layers = 5
+num_epochs = 25
+optimizer = 'RMSprop'
+batch_size = 64
+
+# Parameters to test, pool sizes and strides lowered to reduce change for too much of downzising
+filters = [16, 32, 64]
+kernel_sizes = [(3,3), (5,5)]
+activations = ['relu', 'tanh']
+paddings = ['same', 'valid']
+pool_sizes = [(2,2)]
+strides = [(2,2)]
+kernel_initializers = ['he_normal', 'glorot_uniform']
 
 results = []
 
 path = "dinosaursDataset"
 datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2, horizontal_flip=True)
 
-def build_and_train_model(num_conv_layers, num_pool_layers, num_epochs, optimizer, batch_size):
+def build_and_train_model(filter_size, kernel_size, activation, padding, pool_size, stride, kernel_initializer):
     train_dataset = datagen.flow_from_directory(batch_size=batch_size,
                                                 directory=path,
                                                 color_mode='rgb',
@@ -38,15 +48,17 @@ def build_and_train_model(num_conv_layers, num_pool_layers, num_epochs, optimize
                                                      class_mode="categorical")
 
     model = Sequential()
-    model.add(Conv2D(filters=16, kernel_size=3, activation='relu', kernel_initializer='he_normal', padding='same', input_shape=(224, 224, 3)))
+    model.add(Conv2D(filters=filter_size, kernel_size=kernel_size, activation=activation, kernel_initializer=kernel_initializer, padding=padding, input_shape=(224, 224, 3)))
+    
     for _ in range(num_conv_layers - 1):
-        model.add(Conv2D(filters=32, kernel_size=3, activation='relu', kernel_initializer='he_normal', padding='same'))
-    model.add(MaxPooling2D(pool_size=2))
-    for _ in range(num_pool_layers - 1):
-        model.add(MaxPooling2D(pool_size=2))
+        model.add(Conv2D(filters=filter_size, kernel_size=kernel_size, activation=activation, kernel_initializer=kernel_initializer, padding=padding))
+    
+    for _ in range(num_pool_layers):
+        model.add(MaxPooling2D(pool_size=pool_size, strides=stride, padding=padding))
+    
     model.add(Dropout(0.5))
     model.add(Flatten())
-    model.add(Dense(128, activation='relu', kernel_initializer='he_normal'))
+    model.add(Dense(128, activation='relu', kernel_initializer=kernel_initializer))
     model.add(Dropout(0.5))
     model.add(Dense(train_dataset.num_classes, activation='softmax'))
 
@@ -67,18 +79,20 @@ def build_and_train_model(num_conv_layers, num_pool_layers, num_epochs, optimize
     train_score = model.evaluate(train_dataset)
     test_score = model.evaluate(validation_dataset)
 
-    results.append([num_conv_layers, num_pool_layers, num_epochs, optimizer, batch_size,
+    results.append([filter_size, kernel_size, activation, padding, pool_size, stride, kernel_initializer,
                     train_score[0], train_score[1], test_score[0], test_score[1], train_time])
 
-for conv_layer in conv_layers:
-    for pool_layer in pool_layers:
-        for num_epochs in epochs:
-            for optimizer in optimizers:
-                for batch_size in batch_sizes:
-                    print(f"Testing with conv_layers={conv_layer}, pool_layers={pool_layer}, epochs={num_epochs}, optimizer={optimizer}, batch_size={batch_size}")
-                    build_and_train_model(conv_layer, pool_layer, num_epochs, optimizer, batch_size)
+for filter_size in filters:
+    for kernel_size in kernel_sizes:
+        for activation in activations:
+            for padding in paddings:
+                for pool_size in pool_sizes:
+                    for stride in strides:
+                        for kernel_initializer in kernel_initializers:
+                            print(f"Testing with filter_size={filter_size}, kernel_size={kernel_size}, activation={activation}, padding={padding}, pool_size={pool_size}, stride={stride}, kernel_initializer={kernel_initializer}")
+                            build_and_train_model(filter_size, kernel_size, activation, padding, pool_size, stride, kernel_initializer)
 
-headers = ["Conv Layers", "Pool Layers", "Epochs", "Optimizer", "Batch Size", "Train Loss", "Train Accuracy", "Test Loss", "Test Accuracy", "Train Time (s)"]
+headers = ["Filters", "Kernel Size", "Activation", "Padding", "Pool Size", "Stride", "Kernel Initializer", "Train Loss", "Train Accuracy", "Test Loss", "Test Accuracy", "Train Time (s)"]
 print(tabulate(results, headers=headers))
 
 results_df = pd.DataFrame(results, columns=headers)
