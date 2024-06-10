@@ -19,23 +19,19 @@ def plot_parameter(df, parameter, ax=None):
     ax.set_ylabel('Test Accuracy')
     ax.grid(True)
 
-fig, axes = plt.subplots(3, 3, figsize=(24, 18))
+fig, axes = plt.subplots(2, 3, figsize=(24, 12))
 
 plot_parameter(df, 'Filters', ax=axes[0, 0])
 plot_parameter(df, 'Kernel Size', ax=axes[0, 1])
 plot_parameter(df, 'Activation', ax=axes[0, 2])
 plot_parameter(df, 'Padding', ax=axes[1, 0])
-plot_parameter(df, 'Pool Size', ax=axes[1, 1])
-plot_parameter(df, 'Stride', ax=axes[1, 2])
-plot_parameter(df, 'Kernel Initializer', ax=axes[2, 0])
+plot_parameter(df, 'Kernel Initializer', ax=axes[1, 1])
 
-sns.boxplot(data=df, x='Activation', y='Test Accuracy', ax=axes[2, 1])
-axes[2, 1].set_title('Test Accuracy vs Activation')
-axes[2, 1].set_xlabel('Activation')
-axes[2, 1].set_ylabel('Test Accuracy')
-axes[2, 1].grid(True)
-
-axes[2, 2].axis('off')
+sns.boxplot(data=df, x='Activation', y='Test Accuracy', ax=axes[1, 2])
+axes[1, 2].set_title('Test Accuracy vs Activation')
+axes[1, 2].set_xlabel('Activation')
+axes[1, 2].set_ylabel('Test Accuracy')
+axes[1, 2].grid(True)
 
 plt.tight_layout()
 plt.savefig('results/combined_plots_best_parameters.png')
@@ -43,7 +39,7 @@ plt.show()
 
 # Optimal configurations
 optimal_configurations = {}
-parameters = ['Filters', 'Kernel Size', 'Activation', 'Padding', 'Pool Size', 'Stride', 'Kernel Initializer']
+parameters = ['Filters', 'Kernel Size', 'Activation', 'Padding', 'Kernel Initializer']
 for param in parameters:
     optimal_configurations[param] = df.loc[df.groupby(param)['Test Accuracy'].idxmax()][param].values[0]
 
