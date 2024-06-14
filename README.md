@@ -3,7 +3,7 @@
 - Python 3.11.9  
 - pip install tensorflow==2.13.1 --user  
 - pip install keras==2.13.1 --user  
-- pip install opencv-python, matplotlib, pandas, tabulate, openpyxl, seaborn, joblib  
+- pip install opencv-python, matplotlib, pandas, tabulate, openpyxl, seaborn  
 
 ### Features
 
